@@ -50,4 +50,4 @@ class Payment(models.Model):
     class Meta:
         verbose_name = 'платеж'
         verbose_name_plural = 'платежи'
-        # ordering = ['-payments_date']
+        ordering = ['-payments_date']  # выбор в обратную сторону (-)
