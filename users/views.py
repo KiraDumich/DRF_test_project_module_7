@@ -36,8 +36,8 @@ class UserDeleteView(generics.DestroyAPIView):
 
 
 class PaymentViewSet(ModelViewSet):
-    queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
+    queryset = Payment.objects.all()
 
     filter_backends = [filters.OrderingFilter]
     filterset_fields = ('paid_course', 'paid_lesson')
