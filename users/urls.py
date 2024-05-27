@@ -1,9 +1,10 @@
 from django.urls import path
+from rest_framework.routers import DefaultRouter
 
 # from .views import MyTokenObtainPairView
 from users.apps import UsersConfig
 from users.views import UserRegisterView, UserUpdateView, UserRetrieveView, UserListView, \
-    UserDeleteView
+    UserDeleteView, PaymentViewSet
 
 app_name = UsersConfig.name
 
