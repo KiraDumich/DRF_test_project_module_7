@@ -17,25 +17,30 @@ class UserRegisterView(generics.CreateAPIView):
 
 
 class UserRetrieveView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
 
 
 class UserUpdateView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
 
 class UserListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
 
 class UserDeleteView(generics.DestroyAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
 
 class PaymentViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
