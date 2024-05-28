@@ -11,6 +11,10 @@ class CourseViewSet(ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
 
+    def retrieve(self, request, *args, **kwargs):
+        self.serializer_class = CourseDetailSerializer
+        return super().retrieve(request, *args, **kwargs)
+
     def perform_create(self, serializer):
         course = serializer.save()
         course.owner = self.request.user
