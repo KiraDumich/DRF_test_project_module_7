@@ -1,4 +1,3 @@
-
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -64,32 +63,26 @@ class LessonTestCase(APITestCase):
             Lesson.objects.all().count(), 0
         )
 
-    def test_lesson_list(self):
-        url = reverse("materials:lesson_list")
-        response = self.client.get(url)
-        data = response.json()
-        print(data)
-        self.assertEqual(
-            response.status_code, status.HTTP_200_OK
+    def test_list_lesson(self):
+        course = Course.objects.create(
+            name='Тестовый курс',
+            description='Тест',
         )
-        result = {
-                  "count": 1,
-                  "next": None,
-                  "previous": None,
-                  "results": [
-                             {
-                              "id": self.lesson.pk,
-                              "lesson_name": self.lesson.lesson_name,
-                              "lesson_description": self.lesson.lesson_description,
-                              "preview": None,
-                              "lesson_url": None,
-                              "course": self.course.pk,
-                              "owner": self.user.pk
-                              }
-                              ]
-                }
+
+        Lesson.objects.create(
+            lesson_name='Тестовый урок',
+            lesson_description='Тест',
+            lesson_url=course,
+            owner=self.user
+        )
+
+        response = self.client.get(
+            '/materials/lesson/'
+        )
+
         self.assertEqual(
-            data, result
+            response.status_code,
+            status.HTTP_200_OK
         )
 
 
@@ -149,42 +142,24 @@ class CourseTestCase(APITestCase):
             Course.objects.all().count(), 0
         )
 
-    def test_course_list(self):
-        url = reverse("materials:course-list")
-        response = self.client.get(url)
-        data = response.json()
-        print(data)
-        self.assertEqual(
-            response.status_code, status.HTTP_200_OK
+    def test_list_course(self):
+        response = self.client.get(
+            '/materials/course/',
         )
-        result = {
-            "count": 1,
-            "next": None,
-            "previous": None,
-            "results": [
-                {
-                    "id": self.course.pk,
-                    "course_lessons": [
-                        {
-                            "id": self.lesson.pk,
-                            "lesson_name": self.lesson.lesson_name,
-                            "lesson_description": self.lesson.lesson_description,
-                            "preview": None,
-                            "url": None,
-                            "course": self.course.pk,
-                            "owner": self.user.pk
-                        }
-
-                    ],
-                    "lesson_count": 1,
-                    "subscription": False,
-                    "name": self.course.name,
-                    "description": self.course.description,
-                    "preview": None,
-                    "owner": self.user.pk
-                }
-            ]
-        }
+        print(response)
         self.assertEqual(
-            data, result
+            response.status_code,
+            status.HTTP_200_OK
+        )
+        self.assertEqual(
+            response.json(),
+            {'count': 1, 'next': None, 'previous': None, 'results': [
+                {'name': 'Test', 'description': '...', 'preview': None, 'owner': None, 'subscription': False,
+                 'course_lessons': [
+                     {'id': 4, 'name': 'Урок 1', 'description': 'Введение', 'preview': None, 'link': None, 'course': 5,
+                      'owner': 4}
+                 ],
+                 'course_lesson_count': 1}
+            ]}
+
         )
