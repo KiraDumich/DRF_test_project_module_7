@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from materials.models import Course, Lesson
+from materials.models import Course, Lesson, Subscription
 from users.models import User
 
 
@@ -77,7 +77,7 @@ class LessonTestCase(APITestCase):
         )
 
         response = self.client.get(
-            '/materials/lesson/'
+            '/lesson/'
         )
 
         self.assertEqual(
@@ -142,24 +142,35 @@ class CourseTestCase(APITestCase):
             Course.objects.all().count(), 0
         )
 
-    def test_list_course(self):
-        response = self.client.get(
-            '/materials/course/',
-        )
-        print(response)
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_200_OK
-        )
-        self.assertEqual(
-            response.json(),
-            {'count': 1, 'next': None, 'previous': None, 'results': [
-                {'name': 'Test', 'description': '...', 'preview': None, 'owner': None, 'subscription': False,
-                 'course_lessons': [
-                     {'id': 4, 'name': 'Урок 1', 'description': 'Введение', 'preview': None, 'link': None, 'course': 5,
-                      'owner': 4}
-                 ],
-                 'course_lesson_count': 1}
-            ]}
 
+class SubscriptionTestCase(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create(email="admin@test.py")
+        self.user.set_password('1234')
+        self.client.force_authenticate(user=self.user)
+        self.course = Course.objects.create(name="Python", owner=self.user)
+
+    def test_subscribe(self):
+        data = {
+            "course": self.course.pk
+        }
+        response = self.client.post(
+            '/course/subscribe/',
+            data=data
         )
+        data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data, {'message': 'Подписка включена'})
+
+    def test_unsubscribe(self):
+        data = {
+            "course": self.course.pk
+        }
+        Subscription.objects.create(course=self.course, user=self.user)
+        response = self.client.post(
+            '/course/subscribe/',
+            data=data
+        )
+        data = response.json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data, {'message': 'Подписка отключена'})

@@ -86,3 +86,5 @@ class SubscriptionAPIView(APIView):
             Subscription.objects.create(user=user, course=course)
             message = 'Подписка включена'
         return Response({"message": message})
+
+
